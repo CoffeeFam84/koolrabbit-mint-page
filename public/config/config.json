@@ -1,0 +1,18 @@
+{
+  "CONTRACT_ADDRESS": "0xbf63527841F67c41aB11aa40AEa8E8CCea1d8c08",
+  "SCAN_LINK": "https://rinkeby.etherscan.io/token/0xbf63527841F67c41aB11aa40AEa8E8CCea1d8c08",
+  "NETWORK": {
+    "NAME": "Rinkeby",
+    "SYMBOL": "ETH",
+    "ID": 4
+  },
+  "NFT_NAME": "Kool Rabbit",
+  "SYMBOL": "KRK",
+  "MAX_SUPPLY": 3000,
+  "WEI_COST": 73000000000000000,
+  "DISPLAY_COST": 0.073,
+  "GAS_LIMIT": 285000,
+  "MARKETPLACE": "Opensea",
+  "MARKETPLACE_LINK": "https://testnets.opensea.io/collection/krk-2",
+  "SHOW_BACKGROUND": false
+}
