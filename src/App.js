@@ -59,9 +59,14 @@ export const ResponsiveWrapper = styled.div`
   flex-direction: column;
   justify-content: stretched;
   align-items: stretched;
-  width: 100%;
+  width: 80%;
+  padding:24px;
   @media (min-width: 767px) {
     flex-direction: row;
+  }
+  @media (max-width :425px) {
+    width:98%;
+    padding:5px;
   }
 `;
 
@@ -120,19 +125,59 @@ function App() {
     SHOW_BACKGROUND: false,
   });
 
-  const claimNFTs = () => {
+  const claimNFTs = async () => {
     let cost = CONFIG.WEI_COST;
     let gasLimit = CONFIG.GAS_LIMIT;
     let totalCostWei = String(cost * mintAmount);
     let totalGasLimit = String(gasLimit * mintAmount);
-    console.log("Cost: ", totalCostWei);
-    console.log("Gas limit: ", totalGasLimit);
     setFeedback(`Minting your ${CONFIG.NFT_NAME}...`);
     setClaimingNft(true);
+    const paused = await blockchain.smartContract.methods.pause().call();
+    if (paused == true) {
+      alert("Mint Paused");
+      setClaimingNft(false);
+      return;
+    }
+    const supply = await blockchain.smartContract.methods.totalSupply().call();
+    if (parseInt(supply) + mintAmount > 3000) {
+      alert("Mint Amount Exceed");
+      setClaimingNft(false);
+      return;
+    }
+    const state = await blockchain.smartContract.methods.isPresale().call();
+    const listed = await blockchain.smartContract.methods.whitelisted(blockchain.account).call();
+    const owner = await blockchain.smartContract.methods.owner().call();
+    if (blockchain.account.toLowerCase() === owner.toLowerCase()) {
+      totalCostWei = String(0);
+    }
+
+    else if (state == true) {
+      if (!listed) {
+        alert("Only Whitelist members can mint NFT at Freesale");
+        setClaimingNft(false);
+        return;
+      }
+      const preCnt = await blockchain.smartContract.methods.preMinted(blockchain.account).call();
+
+      if (parseInt(preCnt) + mintAmount > 1) {
+        alert("Presale Buyable Limit Exceed");
+        setClaimingNft(false);
+        return;
+      }
+      totalCostWei = String('0');
+    } else {
+      const pubCnt = await blockchain.smartContract.methods.pubMinted(blockchain.account).call();
+      if (parseInt(pubCnt) + mintAmount > 2) {
+        alert("Publicsale Buyable Limit Exceed");
+        setClaimingNft(false);
+        return;
+      }
+    }
+
     blockchain.smartContract.methods
-      .mintNFT()  //mintAmount
+      .mintNFT(mintAmount)  //mintAmount
       .send({
-        // gasLimit: String(totalGasLimit),
+        gasLimit: String(totalGasLimit),
         to: CONFIG.CONTRACT_ADDRESS,
         from: blockchain.account,
         value: totalCostWei,
@@ -162,8 +207,8 @@ function App() {
 
   const incrementMintAmount = () => {
     let newMintAmount = mintAmount + 1;
-    if (newMintAmount > 1) {
-      newMintAmount = 1;
+    if (newMintAmount > 2) {
+      newMintAmount = 2;
     }
     setMintAmount(newMintAmount);
   };
@@ -201,12 +246,15 @@ function App() {
         style={{ padding: 24, backgroundColor: "var(--primary)" }}
         image={CONFIG.SHOW_BACKGROUND ? "/config/images/bg.png" : null}
       >
-        <StyledLogo alt={"logo"} src={"/config/images/logo.png"} />
+        {/* <StyledLogo alt={"logo"} src={"/config/images/logo.png"} /> */}
+
+        <s.Container flex={1} jc={"center"} ai={"center"}>
+          <StyledImg alt={"example"} src={"/config/images/Live.gif"} />
+        </s.Container>
+
         <s.SpacerSmall />
-        <ResponsiveWrapper flex={1} style={{ padding: 24 }} test>
-          <s.Container flex={1} jc={"center"} ai={"center"}>
-            <StyledImg alt={"example"} src={"/config/images/example.gif"} />
-          </s.Container>
+        <ResponsiveWrapper flex={1} test>
+
           <s.SpacerLarge />
           <s.Container
             flex={2}
@@ -274,7 +322,7 @@ function App() {
                 </s.TextDescription>
                 <s.SpacerSmall />
                 {blockchain.account === "" ||
-                blockchain.smartContract === null ? (
+                  blockchain.smartContract === null ? (
                   <s.Container ai={"center"} jc={"center"}>
                     <s.TextDescription
                       style={{
@@ -370,13 +418,13 @@ function App() {
             <s.SpacerMedium />
           </s.Container>
           <s.SpacerLarge />
-          <s.Container flex={1} jc={"center"} ai={"center"}>
+          {/* <s.Container flex={1} jc={"center"} ai={"center"}>
             <StyledImg
               alt={"example"}
               src={"/config/images/example.gif"}
               style={{ transform: "scaleX(-1)" }}
             />
-          </s.Container>
+          </s.Container> */}
         </ResponsiveWrapper>
         <s.SpacerMedium />
         <s.Container jc={"center"} ai={"center"} style={{ width: "70%" }}>
@@ -387,20 +435,10 @@ function App() {
             }}
           >
             Make sure you are connected to the right network (
-            {CONFIG.NETWORK.NAME} Testnet). Please note:
+            {CONFIG.NETWORK.NAME} Mainnet). Please note:
             once you make the purchase, you cannot undo this action.
           </s.TextDescription>
           <s.SpacerSmall />
-          <s.TextDescription
-            style={{
-              textAlign: "center",
-              color: "var(--primary-text)",
-            }}
-          >
-            We have set the gas limit to {CONFIG.GAS_LIMIT} for the contract to
-            successfully mint your NFT. We recommend that you don't lower the
-            gas limit.
-          </s.TextDescription>
         </s.Container>
       </s.Container>
     </s.Screen>

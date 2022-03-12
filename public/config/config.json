@@ -1,18 +1,18 @@
 {
-  "CONTRACT_ADDRESS": "0xbf63527841F67c41aB11aa40AEa8E8CCea1d8c08",
-  "SCAN_LINK": "https://rinkeby.etherscan.io/token/0xbf63527841F67c41aB11aa40AEa8E8CCea1d8c08",
+  "CONTRACT_ADDRESS": "0x9289d55aa6f229cb377968b09defb586e745c8a3",
+  "SCAN_LINK": "https://etherscan.io/address/0x9289d55aa6f229cb377968b09defb586e745c8a3",
   "NETWORK": {
-    "NAME": "Rinkeby",
+    "NAME": "Ethereum",
     "SYMBOL": "ETH",
-    "ID": 4
+    "ID": 1
   },
   "NFT_NAME": "Kool Rabbit",
-  "SYMBOL": "KRK",
+  "SYMBOL": "LaFemme",
   "MAX_SUPPLY": 3000,
-  "WEI_COST": 73000000000000000,
-  "DISPLAY_COST": 0.073,
+  "WEI_COST": 10000000000000000,
+  "DISPLAY_COST": 0.01,
   "GAS_LIMIT": 285000,
   "MARKETPLACE": "Opensea",
-  "MARKETPLACE_LINK": "https://testnets.opensea.io/collection/krk-2",
+  "MARKETPLACE_LINK": "https://opensea.io/collection/krk-2",
   "SHOW_BACKGROUND": false
 }
